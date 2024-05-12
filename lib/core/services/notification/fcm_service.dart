@@ -83,7 +83,7 @@ class FcmService {
     required RemoteMessage message,
     Function(RemoteMessage)? onMessageHandler,
   }) async {
-    LocalNotifService.showNotification(
+    LocalNotifService.instance.showNotification(
       title: message.notification?.title,
       body: message.notification?.body,
       payload: json.encode(message.data),

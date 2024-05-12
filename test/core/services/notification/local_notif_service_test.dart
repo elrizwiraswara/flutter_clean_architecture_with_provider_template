@@ -1,65 +1,83 @@
 // ignore_for_file: require_trailing_commas, depend_on_referenced_packages
 // ignore_for_file: avoid_redundant_argument_values
 
-// import 'package:flutter_clean_architecture_with_provider_template/core/services/notification/local_notif_service.dart';
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// import 'package:flutter_test/flutter_test.dart';
-// import 'package:mockito/mockito.dart';
+import 'package:flutter_clean_architecture_with_provider_template/core/services/notification/local_notif_service.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 
-// TODO can't do unit testing because [FlutterLocalNotificationsPlugin] depend on native channel
+import 'local_notif_service_test.mocks.dart';
 
-// class MockFlutterLocalNotificationsPlugin extends Mock implements FlutterLocalNotificationsPlugin {}
+// Define an abstract class for the callback function
+abstract class NotificationResponseCallback {
+  void call(NotificationResponse response);
+}
 
-// void main() {
-//   late MockFlutterLocalNotificationsPlugin mockLocalNotifPlugin;
+// Use the GenerateMocks annotation to generate mock classes
+@GenerateMocks([
+  FlutterLocalNotificationsPlugin,
+  InitializationSettings,
+  NotificationResponse,
+  NotificationResponseCallback,
+])
+void main() {
+  // Declare variables for the mock objects
+  late MockFlutterLocalNotificationsPlugin mockLocalNotifPlugin;
+  late MockInitializationSettings initSettings;
+  late MockNotificationResponseCallback mockCallback;
 
-//   InitializationSettings initSettings = const InitializationSettings(
-//     android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-//     iOS: DarwinInitializationSettings(),
-//   );
+  // Define a group of tests for the LocalNotifService
+  group('$LocalNotifService', () {
+    // Set up the mock objects before all tests
+    setUpAll(() async {
+      // Initialize the mock objects
+      mockLocalNotifPlugin = MockFlutterLocalNotificationsPlugin();
+      LocalNotifService.localNotifPlugin = mockLocalNotifPlugin;
+      initSettings = MockInitializationSettings();
+      LocalNotifService.initSettings = initSettings;
+      mockCallback = MockNotificationResponseCallback();
+    });
 
-//   group('$LocalNotifService', () {
-//     setUpAll(() async {
-//       mockLocalNotifPlugin = MockFlutterLocalNotificationsPlugin();
-//       LocalNotifService.localNotifPlugin = mockLocalNotifPlugin;
-//     });
+    // Define a group of tests for the instance
+    group('instance', () {
+      // Test that FlutterLocalNotificationsPlugin returns an instance
+      test('FlutterLocalNotificationsPlugin should returns an instance', () async {
+        expect(mockLocalNotifPlugin, isA<FlutterLocalNotificationsPlugin>());
+      });
+    });
 
-//     group('instance', () {
-//       test('FlutterLocalNotificationsPlugin should returns an instance', () async {
-//         expect(mockLocalNotifPlugin, isA<FlutterLocalNotificationsPlugin>());
-//       });
-//     });
+    // Define a group of tests for the LocalNotifService
+    group('LocalNotifService', () {
+      // Set up the mock behavior before all tests
+      setUpAll(() {
+        when(mockCallback.call(any)).thenReturn(null);
+        when(mockLocalNotifPlugin.getNotificationAppLaunchDetails()).thenAnswer((_) => Future.value());
+        when(mockLocalNotifPlugin.initialize(initSettings, onDidReceiveNotificationResponse: mockCallback.call))
+            .thenAnswer((_) => Future.value(true));
+      });
 
-//     group('initNotification', () {
-//       setUpAll(() {
-//         when(mockLocalNotifPlugin.getNotificationAppLaunchDetails()).thenAnswer((_) => Future.value());
-//         when(mockLocalNotifPlugin.initialize(initSettings, onDidReceiveNotificationResponse: (_) {}))
-//             .thenAnswer((_) => Future.value(true));
-//       });
+      // Test that calling LocalNotifService.initLocalNotifService returns true
+      test('Call LocalNotifService.initLocalNotifService() and should return true', () async {
+        bool? res = await LocalNotifService.instance.initLocalNotifService(
+          channelName: '',
+          packageName: '',
+          onDidReceiveNotificationResponse: mockCallback.call,
+        );
 
-//       test('Call LocalNotifService.initLocalNotifService() and should return true', () async {
-//         bool? res = await LocalNotifService.initLocalNotifService(channelName: '', packageName: '');
+        expect(res, true);
+      });
 
-//         expect(res, true);
+      // Test that calling LocalNotifService.showNotification completes
+      test('Call LocalNotifService.showNotification() and should complete', () async {
+        await LocalNotifService.instance.initLocalNotifService(
+          channelName: '',
+          packageName: '',
+          onDidReceiveNotificationResponse: mockCallback.call,
+        );
 
-//         verify(LocalNotifService.initLocalNotifService(channelName: '', packageName: ''));
-//       });
-//     });
-
-//     group('showNotification', () {
-//       setUpAll(() {
-//         when(mockLocalNotifPlugin.getNotificationAppLaunchDetails()).thenAnswer((_) => Future.value());
-//         when(mockLocalNotifPlugin.initialize(initSettings, onDidReceiveNotificationResponse: (_) {}))
-//             .thenAnswer((_) => Future.value(true));
-//       });
-
-//       test('Call LocalNotifService.showNotification() and should complete', () async {
-//         await LocalNotifService.initLocalNotifService(channelName: '', packageName: '');
-
-//         await expectLater(LocalNotifService.showNotification(title: '', body: ''), completes);
-
-//         verify(LocalNotifService.showNotification(title: '', body: ''));
-//       });
-//     });
-//   });
-// }
+        await expectLater(LocalNotifService.instance.showNotification(title: '', body: ''), completes);
+      });
+    });
+  });
+}

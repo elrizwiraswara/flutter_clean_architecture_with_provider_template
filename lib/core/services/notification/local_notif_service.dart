@@ -19,8 +19,12 @@ class LocalNotifService {
   // prevents instantiation and extension.
   LocalNotifService._();
 
+  static LocalNotifService instance = LocalNotifService._();
+
   static late final String _defaultPackageName;
   static late final String _defaultChannelName;
+
+  static bool _isInitialized = false;
 
   // Notification icon
   static const String _notificationIcon = '@mipmap/ic_launcher';
@@ -37,6 +41,11 @@ class LocalNotifService {
     requestSoundPermission: false,
   );
 
+  static InitializationSettings initSettings = const InitializationSettings(
+    android: _androidInitSettings,
+    iOS: _iosInitSettings,
+  );
+
   // Notification details settings
   static late AndroidNotificationDetails _androidNotifDetails;
 
@@ -44,7 +53,7 @@ class LocalNotifService {
 
   static late NotificationDetails _notificationDetails;
 
-  static Future<bool?> initLocalNotifService({
+  Future<bool?> initLocalNotifService({
     required String packageName,
     required String channelName,
     String? categoryIdentifier,
@@ -55,6 +64,10 @@ class LocalNotifService {
     Function(NotificationResponse)? onDidReceiveNotificationResponse,
   }) async {
     try {
+      if (_isInitialized) {
+        return true;
+      }
+
       _defaultPackageName = packageName;
       _defaultChannelName = channelName;
 
@@ -82,15 +95,13 @@ class LocalNotifService {
         onDidReceiveNotificationResponse ?? _onDidReceiveNotif(notifAppLaunchDetails!.notificationResponse!);
       }
 
-      const InitializationSettings initSettings = InitializationSettings(
-        android: _androidInitSettings,
-        iOS: _iosInitSettings,
-      );
+      _isInitialized = await localNotifPlugin.initialize(
+            initSettings,
+            onDidReceiveNotificationResponse: onDidReceiveNotificationResponse ?? _onDidReceiveNotif,
+          ) ??
+          false;
 
-      return await localNotifPlugin.initialize(
-        initSettings,
-        onDidReceiveNotificationResponse: onDidReceiveNotificationResponse ?? _onDidReceiveNotif,
-      );
+      return _isInitialized;
     } catch (e) {
       cl(['[initLocalNotifService].e = $e']);
       throw ServiceException(error: e.toString());
@@ -113,7 +124,7 @@ class LocalNotifService {
     }
   }
 
-  static Future<void> showNotification({
+  Future<void> showNotification({
     required String? title,
     required String? body,
     String? image,
@@ -150,7 +161,7 @@ class LocalNotifService {
     );
   }
 
-  static Future<void> showDownloadProgressNotification({
+  Future<void> showDownloadProgressNotification({
     required String? title,
     required String? body,
     required String? payload,
@@ -192,5 +203,9 @@ class LocalNotifService {
     final File file = File(filePath);
     await file.writeAsBytes(response.bodyBytes);
     return filePath;
+  }
+
+  Future<void> cancelNotification(int id, {String? tag}) async {
+    return localNotifPlugin.cancel(id, tag: tag);
   }
 }

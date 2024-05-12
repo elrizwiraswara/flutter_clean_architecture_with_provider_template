@@ -61,6 +61,8 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   mockito: ^5.4.4
+  build_runner: ^2.4.6
+  flutter_gen: ^5.2.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -79,6 +81,7 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  generate: true
 
   # To add assets to your application, add an assets section, like this:
   # assets:
