@@ -8,9 +8,9 @@ import 'dart:convert' as _i4;
 import 'dart:io' as _i3;
 import 'dart:typed_data' as _i7;
 
-import 'package:flutter_clean_architecture_with_provider_template/core/services/downloader/downloader_service.dart'
+import 'package:flutter_clean_architecture_with_provider_template/services/downloader/downloader_service.dart'
     as _i8;
-import 'package:flutter_clean_architecture_with_provider_template/core/services/notification/local_notif_service.dart'
+import 'package:flutter_clean_architecture_with_provider_template/services/notification/local_notif_service.dart'
     as _i10;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
     as _i11;

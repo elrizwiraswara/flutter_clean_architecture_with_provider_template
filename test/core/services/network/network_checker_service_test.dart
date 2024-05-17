@@ -1,34 +1,29 @@
-import 'dart:io';
-
-import 'package:connectivity/connectivity.dart';
-import 'package:flutter_clean_architecture_with_provider_template/core/services/network/network_checker_service.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_clean_architecture_with_provider_template/services/network/network_checker_service.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'network_checker_service_test.mocks.dart';
 
-// Importing the necessary packages
-@GenerateMocks([Connectivity, InternetConnectionChecker, HttpClient])
+// Define the classes that you want to mock
+@GenerateMocks([Connectivity, http.Client])
 void main() {
   // Declaring the mock objects
   late MockConnectivity mockConnectivity;
-  late MockInternetConnectionChecker mockInternetConnectionChecker;
-  late MockHttpClient mockHttpClient;
+  late MockClient mockClient;
 
   // Grouping the tests related to NetworkCheckerService
   group('$NetworkCheckerService', () {
     // Setting up the mock objects before all tests
     setUpAll(() async {
       mockConnectivity = MockConnectivity();
-      mockInternetConnectionChecker = MockInternetConnectionChecker();
-      mockHttpClient = MockHttpClient();
+      mockClient = MockClient();
 
       // Assigning the mock objects to the NetworkCheckerService
       NetworkCheckerService.connectivity = mockConnectivity;
-      NetworkCheckerService.internetConnectionChecker = mockInternetConnectionChecker;
-      NetworkCheckerService.httpClient = mockHttpClient;
+      NetworkCheckerService.client = mockClient;
     });
 
     // Grouping the tests related to instance creation
@@ -37,13 +32,9 @@ void main() {
       test('mockConnectivity should returns an instance', () async {
         expect(mockConnectivity, isA<Connectivity>());
       });
-      // Testing if mockInternetConnectionChecker returns an instance of InternetConnectionChecker
-      test('mockInternetConnectionChecker should returns an instance', () async {
-        expect(mockInternetConnectionChecker, isA<InternetConnectionChecker>());
-      });
-      // Testing if mockHttpClient returns an instance of HttpClient
-      test('mockHttpClient should returns an instance', () async {
-        expect(mockHttpClient, isA<HttpClient>());
+      // Testing if mockClient returns an instance of HttpClient
+      test('mockClient should returns an instance', () async {
+        expect(mockClient, isA<http.Client>());
       });
     });
 
@@ -52,15 +43,13 @@ void main() {
       // Setting up the mock responses for the methods
       setUpAll(() {
         when(mockConnectivity.onConnectivityChanged)
-            .thenAnswer((_) => Stream<ConnectivityResult>.value(ConnectivityResult.mobile));
-        when(mockInternetConnectionChecker.hasConnection).thenAnswer((realInvocation) => Future.value(true));
+            .thenAnswer((_) => Stream<List<ConnectivityResult>>.value([ConnectivityResult.mobile]));
+        when(mockClient.get(any)).thenAnswer((_) async => http.Response('', 200));
       });
 
       // Testing if NetworkCheckerService.initNetworkChecker() completes
       test('Call NetworkCheckerService.initNetworkChecker() and should be complete', () async {
         await expectLater(NetworkCheckerService.initNetworkChecker(), completes);
-
-        verify(NetworkCheckerService.initNetworkChecker());
       });
 
       // Testing if NetworkCheckerService.isConnected returns true after initialization
@@ -76,8 +65,8 @@ void main() {
       // Setting up the mock responses for the methods
       setUpAll(() {
         when(mockConnectivity.onConnectivityChanged)
-            .thenAnswer((_) => Stream<ConnectivityResult>.value(ConnectivityResult.none));
-        when(mockInternetConnectionChecker.hasConnection).thenAnswer((realInvocation) => Future.value(false));
+            .thenAnswer((_) => Stream<List<ConnectivityResult>>.value([ConnectivityResult.mobile]));
+        when(mockClient.get(any)).thenAnswer((_) async => http.Response('', 201));
       });
 
       // Testing if NetworkCheckerService.isConnected returns false after initialization

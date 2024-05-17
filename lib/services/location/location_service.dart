@@ -39,7 +39,7 @@ class LocationService {
       locationData = await location.getLocation();
       return locationData!;
     } catch (e) {
-      cl('[getCurrentPosition].e $e');
+      cl('[getCurrentPosition].error $e');
       return null;
     }
   }

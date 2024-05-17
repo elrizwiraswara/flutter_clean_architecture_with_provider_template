@@ -6,7 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_messaging_platform_interface/firebase_messaging_platform_interface.dart';
 import 'package:firebase_messaging_platform_interface/src/utils.dart';
 import 'package:flutter_clean_architecture_with_provider_template/core/errors/exceptions.dart';
-import 'package:flutter_clean_architecture_with_provider_template/core/services/notification/fcm_service.dart';
+import 'package:flutter_clean_architecture_with_provider_template/services/notification/fcm_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 

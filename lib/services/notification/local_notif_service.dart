@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:flutter_clean_architecture_with_provider_template/core/utilities/console_log.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../errors/exceptions.dart';
+import '../../core/errors/exceptions.dart';
+import '../../utilities/console_log.dart';
 import '../../utilities/external_launcher.dart';
 import '../navigation/navigation_service.dart';
 
@@ -103,7 +103,7 @@ class LocalNotifService {
 
       return _isInitialized;
     } catch (e) {
-      cl(['[initLocalNotifService].e = $e']);
+      cl(['[initLocalNotifService].error = $e']);
       throw ServiceException(error: e.toString());
     }
   }

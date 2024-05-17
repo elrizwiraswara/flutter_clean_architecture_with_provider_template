@@ -60,6 +60,7 @@ class FcmService {
         cl('[FcmService].settings.authorizationStatus = ${settings.authorizationStatus}');
       }
     } catch (e) {
+      cl('[FcmService].error = $e');
       throw ServiceException(error: e.toString());
     }
   }

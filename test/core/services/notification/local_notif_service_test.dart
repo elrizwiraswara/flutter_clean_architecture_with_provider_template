@@ -1,7 +1,7 @@
 // ignore_for_file: require_trailing_commas, depend_on_referenced_packages
 // ignore_for_file: avoid_redundant_argument_values
 
-import 'package:flutter_clean_architecture_with_provider_template/core/services/notification/local_notif_service.dart';
+import 'package:flutter_clean_architecture_with_provider_template/services/notification/local_notif_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';

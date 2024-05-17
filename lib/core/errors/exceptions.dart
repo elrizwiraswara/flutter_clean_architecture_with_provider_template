@@ -1,30 +1,31 @@
 import 'package:equatable/equatable.dart';
 
 class APIException extends Equatable implements Exception {
-  const APIException({required this.message, required this.statusCode});
+  const APIException({required this.error, this.code});
 
-  final String message;
-  final int statusCode;
+  final String error;
+  final int? code;
 
   @override
-  List<Object?> get props => [message, statusCode];
+  List<Object?> get props => [error, code];
 }
 
 class CacheException extends Equatable implements Exception {
-  const CacheException({required this.message, required this.statusCode});
+  const CacheException({required this.error, this.code});
 
-  final String message;
-  final int statusCode;
+  final String error;
+  final int? code;
 
   @override
-  List<Object?> get props => [message, statusCode];
+  List<Object?> get props => [error, code];
 }
 
 class ServiceException extends Equatable implements Exception {
-  const ServiceException({required this.error});
+  const ServiceException({required this.error, this.code});
 
   final String error;
+  final int? code;
 
   @override
-  List<Object?> get props => [error];
+  List<Object?> get props => [error, code];
 }

@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-import '../locale/app_locale.dart';
+import '../core/locale/app_locale.dart';
 
 // App Currency Formatter
 // v.1.0.0

@@ -1,4 +1,4 @@
-import 'package:flutter_clean_architecture_with_provider_template/core/services/location/location_service.dart';
+import 'package:flutter_clean_architecture_with_provider_template/services/location/location_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:location/location.dart';
 import 'package:mockito/annotations.dart';

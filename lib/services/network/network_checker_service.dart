@@ -1,14 +1,12 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:connectivity/connectivity.dart';
-import 'package:flutter/foundation.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:http/http.dart' as http;
 
 import '../../utilities/console_log.dart';
 
 // Network Checker Service
-// v.3.0.3
+// v.4.0.0
 // by Elriz Wiraswara
 
 class NetworkCheckerService {
@@ -18,19 +16,26 @@ class NetworkCheckerService {
 
   static Connectivity connectivity = Connectivity();
 
-  static InternetConnectionChecker internetConnectionChecker = InternetConnectionChecker();
+  static http.Client client = http.Client();
 
-  static HttpClient httpClient = HttpClient();
+  static String host = 'google.com';
 
   static bool isConnected = false;
 
-  static StreamSubscription<ConnectivityResult>? _subscription;
+  static StreamSubscription<List<ConnectivityResult>>? _subscription;
 
   static Future<void> initNetworkChecker({Function(bool)? onHasInternet}) async {
     await _checkInternetConnection();
 
-    _subscription = connectivity.onConnectivityChanged.listen((ConnectivityResult result) async {
-      if (result != ConnectivityResult.none) {
+    _subscription = connectivity.onConnectivityChanged.listen((results) async {
+      var internetConnectivityList = [
+        ConnectivityResult.mobile,
+        ConnectivityResult.wifi,
+        ConnectivityResult.ethernet,
+        ConnectivityResult.vpn,
+      ];
+
+      if (results.every((e) => internetConnectivityList.contains(e))) {
         await _checkInternetConnection();
 
         if (onHasInternet != null) {
@@ -45,15 +50,12 @@ class NetworkCheckerService {
   }
 
   static Future<void> _checkInternetConnection() async {
-    if (!kIsWeb) {
-      isConnected = await internetConnectionChecker.hasConnection;
+    var response = await client.get(Uri.http(host));
+
+    if (response.statusCode == 200) {
+      isConnected = true;
     } else {
-      final res = await httpClient.get("www.google.com", 80, '/');
-      if ((await res.close()).statusCode == 200) {
-        isConnected = true;
-      } else {
-        isConnected = false;
-      }
+      isConnected = false;
     }
   }
 
