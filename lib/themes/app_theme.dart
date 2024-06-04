@@ -1,115 +1,213 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:material_color_utilities/material_color_utilities.dart';
 
-import 'app_colors.dart';
-import 'app_text_style.dart';
+class AppTheme extends ThemeExtension<AppTheme> {
+  /// Make [AppTheme] to be singleton
+  static final AppTheme _instance = AppTheme._internal();
 
-// App Theme
-// v.2.0.0
-// by Elriz Wiraswara
+  factory AppTheme() => _instance;
 
-// App Theme
-class AppTheme {
-  // This class is not meant to be instatiated or extended; this constructor
-  // prevents instantiation and extension.
-  AppTheme._();
-
-  // App Theme mode
-  static bool isLightMode = true;
-
-  // Light Ui Overlay Style
-  static const lightOverlayStyle = SystemUiOverlayStyle(
-    systemNavigationBarColor: AppColors.white,
-    systemNavigationBarIconBrightness: Brightness.dark,
-    statusBarColor: AppColors.white,
-    statusBarIconBrightness: Brightness.dark,
-  );
-
-  // Dark Ui Overlay Style
-  static const darkOverlayStyle = SystemUiOverlayStyle(
-    systemNavigationBarColor: AppColors.black,
-    systemNavigationBarIconBrightness: Brightness.light,
-    statusBarColor: AppColors.black,
-    statusBarIconBrightness: Brightness.light,
-  );
-
-  // App Theme selector
-  static ThemeData themeSelector() {
-    return isLightMode ? lightTheme() : darkTheme();
+  AppTheme._internal() {
+    init(_context);
   }
 
-  // Light Theme
-  static ThemeData lightTheme() {
+  late BuildContext _context;
+
+  Color _primaryColor = const Color(0xFF356859);
+  Color? _secondaryColor;
+  Color? _tertiaryColor;
+  Color? _neutralColor;
+  Brightness _brightness = Brightness.light;
+  TextTheme _primaryTextTheme = GoogleFonts.lektonTextTheme();
+  TextTheme _secondaryTextTheme = GoogleFonts.montserratTextTheme();
+
+  TextTheme get textTheme => Theme.of(_context).textTheme;
+
+  ColorScheme get colorScheme => Theme.of(_context).colorScheme;
+
+  ThemeData init(
+    context, {
+    Color? primaryColor,
+    Color? secondaryColor,
+    Color? tertiaryColor,
+    Color? neutralColor,
+    Brightness? brightness,
+    TextTheme? primaryTextTheme,
+    TextTheme? secondaryTextTheme,
+  }) {
+    _context = context;
+    _primaryColor = primaryColor ?? _primaryColor;
+    secondaryColor = secondaryColor;
+    tertiaryColor = tertiaryColor;
+    neutralColor = neutralColor;
+    _brightness = brightness ?? _brightness;
+    _primaryTextTheme = primaryTextTheme ?? _primaryTextTheme;
+    _secondaryTextTheme = secondaryTextTheme ?? _secondaryTextTheme;
+
+    return _base(
+      colorScheme: _scheme().toColorScheme(_brightness),
+      brightness: _brightness,
+      primaryTextTheme: _primaryTextTheme,
+      secondaryTextTheme: _secondaryTextTheme,
+    );
+  }
+
+  Scheme _scheme() {
+    final base = CorePalette.of(_primaryColor.value);
+
+    final primary = base.primary;
+    final secondary = _secondaryColor != null ? CorePalette.of(_secondaryColor!.value).primary : base.primary;
+    final tertiary = _tertiaryColor != null ? CorePalette.of(_tertiaryColor!.value).primary : base.tertiary;
+    final neutral = _neutralColor != null ? CorePalette.of(_neutralColor!.value).neutral : base.neutral;
+
+    return Scheme(
+      primary: primary.get(40),
+      onPrimary: primary.get(100),
+      primaryContainer: primary.get(90),
+      onPrimaryContainer: primary.get(10),
+      secondary: secondary.get(40),
+      onSecondary: secondary.get(100),
+      secondaryContainer: secondary.get(90),
+      onSecondaryContainer: secondary.get(10),
+      tertiary: tertiary.get(40),
+      onTertiary: tertiary.get(100),
+      tertiaryContainer: tertiary.get(90),
+      onTertiaryContainer: tertiary.get(10),
+      error: base.error.get(40),
+      onError: base.error.get(100),
+      errorContainer: base.error.get(90),
+      onErrorContainer: base.error.get(10),
+      background: neutral.get(99),
+      onBackground: neutral.get(10),
+      surface: neutral.get(99),
+      onSurface: neutral.get(10),
+      outline: base.neutralVariant.get(50),
+      outlineVariant: base.neutralVariant.get(80),
+      surfaceVariant: base.neutralVariant.get(90),
+      onSurfaceVariant: base.neutralVariant.get(30),
+      shadow: neutral.get(0),
+      scrim: neutral.get(0),
+      inverseSurface: neutral.get(20),
+      inverseOnSurface: neutral.get(95),
+      inversePrimary: primary.get(80),
+    );
+  }
+
+  ThemeData _base({
+    required ColorScheme colorScheme,
+    required Brightness brightness,
+    required TextTheme primaryTextTheme,
+    required TextTheme secondaryTextTheme,
+  }) {
+    final textTheme = primaryTextTheme.copyWith(
+      displaySmall: secondaryTextTheme.displaySmall,
+      displayMedium: secondaryTextTheme.displayMedium,
+      displayLarge: secondaryTextTheme.displayLarge,
+      headlineSmall: secondaryTextTheme.headlineSmall,
+      headlineMedium: secondaryTextTheme.headlineMedium,
+      headlineLarge: secondaryTextTheme.headlineLarge,
+    );
+
+    final isLight = colorScheme.brightness == Brightness.light;
+
     return ThemeData(
-      useMaterial3: false,
-      scaffoldBackgroundColor: AppColors.white,
-      hintColor: AppColors.blackLv4,
-      disabledColor: AppColors.blackLv4,
-      fontFamily: AppTextStyle.defaultFontFamily,
-      primaryColor: AppColors.primary,
-      primarySwatch: AppColors.mainColor,
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      iconTheme: const IconThemeData(color: AppColors.blackLv1),
-      primaryIconTheme: const IconThemeData(color: AppColors.blackLv1),
-      dividerTheme: const DividerThemeData(
-        color: AppColors.blackLv3,
-        thickness: 0.5,
-        space: 36,
-      ),
+      useMaterial3: true,
+      extensions: [this],
+      colorScheme: colorScheme,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+      scaffoldBackgroundColor: colorScheme.surface,
+      textTheme: textTheme,
       appBarTheme: AppBarTheme(
-        systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: AppColors.white,
-          statusBarIconBrightness: Brightness.dark,
-          statusBarBrightness: Brightness.light,
+        backgroundColor: isLight ? _neutralColor : colorScheme.surface,
+      ),
+      tabBarTheme: TabBarTheme(
+        labelColor: colorScheme.onSurface,
+        unselectedLabelColor: colorScheme.onSurface,
+        indicator: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: colorScheme.primary, width: 2),
+          ),
         ),
-        iconTheme: const IconThemeData(color: AppColors.blackLv1),
-        backgroundColor: AppColors.white,
-        elevation: 0.5,
-        shadowColor: AppColors.blackLv3,
-        titleTextStyle: AppTextStyle.bold(size: 18),
-        titleSpacing: 0,
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: colorScheme.secondaryContainer,
+        foregroundColor: colorScheme.onSecondaryContainer,
+      ),
+      navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: isLight ? _neutralColor : colorScheme.surface,
+        selectedIconTheme: IconThemeData(color: colorScheme.onSecondaryContainer),
+        indicatorColor: colorScheme.secondaryContainer,
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: isLight ? _neutralColor : colorScheme.surface,
       ),
     );
   }
 
-  // Dark Theme
-  static ThemeData darkTheme() {
-    return ThemeData(
-      useMaterial3: false,
-      scaffoldBackgroundColor: AppColors.blackLv1,
-      hintColor: AppColors.blackLv4,
-      disabledColor: AppColors.blackLv4,
-      fontFamily: AppTextStyle.defaultFontFamily,
-      primaryColor: AppColors.primary,
-      primarySwatch: AppColors.mainColor,
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      iconTheme: const IconThemeData(color: AppColors.blackLv1),
-      primaryIconTheme: const IconThemeData(color: AppColors.blackLv1),
-      dividerTheme: const DividerThemeData(
-        color: AppColors.blackLv3,
-        thickness: 0.5,
-        space: 36,
-      ),
-      appBarTheme: AppBarTheme(
-        systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: AppColors.white,
-          statusBarIconBrightness: Brightness.dark,
-          statusBarBrightness: Brightness.light,
-        ),
-        iconTheme: const IconThemeData(color: AppColors.blackLv1),
-        backgroundColor: AppColors.white,
-        elevation: 0.5,
-        shadowColor: AppColors.blackLv3,
-        titleTextStyle: AppTextStyle.bold(size: 18),
-        titleSpacing: 0,
-      ),
-    );
-  }
+  @override
+  ThemeExtension<AppTheme> copyWith({
+    Color? primaryColor,
+    Color? tertiaryColor,
+    Color? neutralColor,
+    Brightness? brightness,
+  }) =>
+      AppTheme._instance.copyWith(
+        primaryColor: primaryColor ?? _primaryColor,
+        tertiaryColor: tertiaryColor ?? _tertiaryColor,
+        neutralColor: neutralColor ?? _neutralColor,
+        brightness: brightness ?? _brightness,
+      );
 
-  // Scroll behaviour overridden
-  static ScrollBehavior scrollBehavior(BuildContext context) {
-    return ScrollConfiguration.of(context).copyWith(
-      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+  @override
+  AppTheme lerp(
+    covariant ThemeExtension<AppTheme>? other,
+    double t,
+  ) {
+    if (other is! AppTheme) return this;
+
+    final theme = AppTheme();
+
+    theme._primaryColor = Color.lerp(_primaryColor, other._primaryColor, t)!;
+    theme._tertiaryColor = Color.lerp(_tertiaryColor, other._tertiaryColor, t)!;
+    theme._neutralColor = Color.lerp(_neutralColor, other._neutralColor, t)!;
+
+    return theme;
+  }
+}
+
+extension on Scheme {
+  ColorScheme toColorScheme(Brightness brightness) {
+    return ColorScheme(
+      primary: Color(primary),
+      onPrimary: Color(onPrimary),
+      primaryContainer: Color(primaryContainer),
+      onPrimaryContainer: Color(onPrimaryContainer),
+      secondary: Color(secondary),
+      onSecondary: Color(onSecondary),
+      secondaryContainer: Color(secondaryContainer),
+      onSecondaryContainer: Color(onSecondaryContainer),
+      tertiary: Color(tertiary),
+      onTertiary: Color(onTertiary),
+      tertiaryContainer: Color(tertiaryContainer),
+      onTertiaryContainer: Color(onTertiaryContainer),
+      error: Color(error),
+      onError: Color(onError),
+      errorContainer: Color(errorContainer),
+      onErrorContainer: Color(onErrorContainer),
+      outline: Color(outline),
+      outlineVariant: Color(outlineVariant),
+      surface: Color(surface),
+      onSurface: Color(onSurface),
+      surfaceContainerHighest: Color(surfaceVariant),
+      onSurfaceVariant: Color(onSurfaceVariant),
+      inverseSurface: Color(inverseSurface),
+      onInverseSurface: Color(inverseOnSurface),
+      inversePrimary: Color(inversePrimary),
+      shadow: Color(shadow),
+      scrim: Color(scrim),
+      surfaceTint: Color(primary),
+      brightness: brightness,
     );
   }
 }

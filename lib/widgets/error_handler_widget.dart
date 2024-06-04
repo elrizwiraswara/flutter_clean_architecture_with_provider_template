@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_clean_architecture_with_provider_template/themes/app_sizes.dart';
+import 'package:flutter_clean_architecture_with_provider_template/themes/app_theme.dart';
 import 'package:flutter_clean_architecture_with_provider_template/utilities/console_log.dart';
 
 class ErrorHandlerWidget extends StatefulWidget {
@@ -14,7 +17,7 @@ class ErrorHandlerWidgetState extends State<ErrorHandlerWidget> {
   // Error handling logic
   void onError(FlutterErrorDetails errorDetails) {
     // Add your error handling logic here, e.g., logging, reporting to a server, etc.
-    cl('Caught error: ${errorDetails.exception}');
+    cl("ERROR: $errorDetails");
   }
 
   @override
@@ -23,11 +26,27 @@ class ErrorHandlerWidgetState extends State<ErrorHandlerWidget> {
       builder: (context, errorDetails) {
         // Display a user-friendly error screen
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Error'),
-          ),
-          body: const Center(
-            child: Text('Something went wrong. Please try again later.'),
+          appBar: AppBar(),
+          body: Center(
+            child: Column(
+              children: [
+                Text(
+                  'Oops!',
+                  style: AppTheme().textTheme.displaySmall?.copyWith(color: AppTheme().colorScheme.onError),
+                ),
+                const SizedBox(height: AppSizes.padding),
+                Text(
+                  'Something went wrong. Please try again later.',
+                  style: AppTheme().textTheme.bodyLarge,
+                ),
+                // Only show error details to UI on Debug Mode
+                if (kDebugMode)
+                  Text(
+                    errorDetails.toString(),
+                    style: AppTheme().textTheme.bodySmall?.copyWith(color: AppTheme().colorScheme.surface),
+                  ),
+              ],
+            ),
           ),
         );
       },

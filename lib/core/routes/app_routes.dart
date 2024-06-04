@@ -11,7 +11,7 @@ class AppRoutes {
   // prevents instantiation and extension.
   AppRoutes._();
 
-  static final routes = GoRouter(
+  static final router = GoRouter(
     initialLocation: '/',
     routes: [_main],
   );

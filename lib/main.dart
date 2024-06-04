@@ -40,9 +40,6 @@ void main() async {
   // Set/lock orientationgvhvgj
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  // Set overlay style
-  SystemChrome.setSystemUIOverlayStyle(AppTheme.lightOverlayStyle);
-
   runApp(const MyApp());
 }
 
@@ -51,15 +48,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = AppTheme().init(context);
+
     return MultiProvider(
       providers: const [
         // Providers
       ],
       child: MaterialApp.router(
         title: 'Flutter Template',
-        theme: AppTheme.themeSelector(),
+        theme: theme,
         debugShowCheckedModeBanner: kDebugMode,
-        routerConfig: AppRoutes.routes,
+        routerConfig: AppRoutes.router,
         locale: AppLocale.defaultLocale,
         supportedLocales: AppLocale.supportedLocales,
         localizationsDelegates: AppLocale.localizationsDelegates,

@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 
 class APIException extends Equatable implements Exception {
-  const APIException({required this.error, this.code});
+  const APIException({this.error, this.code});
 
-  final String error;
+  final String? error;
   final int? code;
 
   @override
@@ -11,9 +11,9 @@ class APIException extends Equatable implements Exception {
 }
 
 class CacheException extends Equatable implements Exception {
-  const CacheException({required this.error, this.code});
+  const CacheException({this.error, this.code});
 
-  final String error;
+  final String? error;
   final int? code;
 
   @override
@@ -21,9 +21,9 @@ class CacheException extends Equatable implements Exception {
 }
 
 class ServiceException extends Equatable implements Exception {
-  const ServiceException({required this.error, this.code});
+  const ServiceException({this.error, this.code});
 
-  final String error;
+  final String? error;
   final int? code;
 
   @override

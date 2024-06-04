@@ -8,13 +8,11 @@ class UserEntity extends Equatable {
   final String id;
   final String name;
   final String email;
-  final String avatar;
 
   const UserEntity({
     required this.id,
     required this.name,
     required this.email,
-    required this.avatar,
   });
 
   factory UserEntity.fromJson(Map<String, dynamic> json) {
@@ -24,5 +22,5 @@ class UserEntity extends Equatable {
   Map<String, dynamic> toJson() => _$UserEntityToJson(this);
 
   @override
-  List<Object?> get props => [id, name, email, avatar];
+  List<Object?> get props => [id, name, email];
 }

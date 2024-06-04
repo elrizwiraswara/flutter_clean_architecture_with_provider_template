@@ -1,15 +1,16 @@
-// App Sizes
+import 'package:flutter/material.dart';
 
-import 'dart:ui';
-
+/// Custom size for common used sizes (e.g. padding)
 class AppSizes {
-  // This class is not meant to be instatiated or extended; this constructor
-  // prevents instantiation and extension.
+  /// This class is not meant to be instatiated or extended; this constructor
+  /// prevents instantiation and extension.
   AppSizes._();
 
-  static Size screenSize = (PlatformDispatcher.instance.implicitView?.physicalSize ?? const Size(0, 0)) /
-      PlatformDispatcher.instance.views.first.devicePixelRatio;
-
+  static const double margin = 18;
   static const double padding = 18;
   static const double radius = 8;
+
+  static Size size(BuildContext context) => MediaQuery.sizeOf(context);
+  static double screenWidth(BuildContext context) => MediaQuery.sizeOf(context).width;
+  static double screenHeight(BuildContext context) => MediaQuery.sizeOf(context).height;
 }
